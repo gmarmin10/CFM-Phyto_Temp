@@ -9,6 +9,20 @@ The three different nutrient regimes and the corresponding python file are liste
 
 3. Nitrogen Limitation: N_P-Nlimiting-Github
 
+There are also two light regimes provided as seen in the supplementary material:
+
+1. N_P-colimiting_scenario_low-light
+
+2. N_P-colimiting_scenario_high-light
+
+Lastly, two different growth rates are provided as seen in the supplementary material.
+
+1. N_P-colimiting_scenario_0.15
+
+2. N_P-colimiting_scenario_0.35
+
+You can change the set values of light intensity or growth rate by:
+
 To change the growth rate, change the parameter on line 54 (for all 3 nutrient regimes) labeled "Dd". This unit is measured in dilution per day.
 
 To change the light intensity, change the parameter on line 32 labeled "I". This is irradiance measured in umol of photons per meter^2 per second.
