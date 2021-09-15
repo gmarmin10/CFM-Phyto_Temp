@@ -15,11 +15,16 @@ There are also two light regimes provided as seen in the supplementary material:
 
 2. N_P-colimiting_scenario_high-light
 
-Lastly, two different growth rates are provided as seen in the supplementary material.
+There are two different growth rates are provided as seen in the supplementary material:
 
 1. N_P-colimiting_scenario_0.15
 
 2. N_P-colimiting_scenario_0.35
+
+If you prefer to use the temperature formulation of Q10 rather than the Arrhenius form, a simulation in the co-limiting scenario is available:
+
+1. N_P-colimiting_scenario_FINAL-Q10
+
 
 You can change the set values of light intensity or growth rate by:
 
@@ -38,3 +43,36 @@ Figure 3: P:C ratio with increasing temperature. Color-coded by macromolecular a
 
 Figure 4: Model comparison to culture data. N:P ratio with increasing temperature
 
+Lastly, our model results are reflected in the global surface ocean using the following:
+
+  Data input:
+  
+  1. X
+  2. Y
+  3. Z
+  
+  Codes:
+  
+  1. final_verison2
+
+  2. t002_reading_plot
+
+The resulting code produces 9 figures total. 
+
+Figure 1: N:P values on a global plot for current ocean temperatures
+
+Figure 2: P:C values on a global plot for current ocean temperatures
+
+Figure 3: N:C values on a global plot for current ocean temperatures
+
+Figure 4: N:P values on a global plot for future ocean temperatures (+4C)
+
+Figure 5: P:C values on a global plot for future ocean temperatures (+4C)
+
+Figure 6: N:C values on a global plot for future ocean temperatures (+4C)
+
+Figure 7: Change in N:P values between these two scenarios on a global plot
+
+Figure 8: Change in P:C values between these two scenarios on a global plot
+
+Figure 9: Change in N:C values between these two scenarios on a global plot
