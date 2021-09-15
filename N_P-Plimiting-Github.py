@@ -89,9 +89,11 @@ def kkI():
     A=Ea/R
     Arr=exp(-A*((1/Tt)-(1/Tref)))                           #arrehenius equation (Geider, 1997) function of temperature 
     
+    Parr=ones(size(Arr))                                    #no temperature dependence on photosynthesis
+   
     Tc = Tt - K
 
-    Pchl=Arr*Pmax*(1-exp(-OT*I))                            #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
+    Pchl=Parr*Pmax*(1-exp(-OT*I))                            #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
     Pchl=Pchl/2                                             #12:12 dark:light cycle leading to half photosynthesis
     
     Cnbiosynth = Cnbiosynth/Arr
@@ -493,7 +495,7 @@ def kkI():
         pyplot.xticks(arange(10,22,step=2),fontsize=20)
         pyplot.yticks(arange(0.00,0.35,step=0.05),fontsize=20)
         pyplot.xlim(10,20)
-        pyplot.ylim(top=0.30)
+        pyplot.ylim(top=0.20)
         eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
         pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
         bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
@@ -507,7 +509,7 @@ def kkI():
         pyplot.xticks(arange(10,22,step=2),fontsize=20)
         pyplot.yticks(fontsize=20)
         pyplot.xlim(10,20)
-        pyplot.ylim(top=0.01)
+        pyplot.ylim(top=0.008)
         eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
         pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
         bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)

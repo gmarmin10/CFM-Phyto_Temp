@@ -93,14 +93,14 @@ def kkI():   #this t00function calculate for the same irradiance
     #Following steps to match 1600 array for the N:P output
     Tstep=3.8889
     Ttstep=3.88889
-    Tt=arange(Tmin,Tmax+2*Ttstep,Ttstep)
+    Tt=arange(Tmin,Tmax+Ttstep,Ttstep)
     U = arange(size(Tt))
     A=Ea/R
     Arr=exp(-A*((1/Tt)-(1/Tref))) #arrehenius equation (Geider, 1997) function of temperature 
     
     Tc = Tt - K
-
-    Pchl=Arr*Pmax*(1-exp(-OT*I)) #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
+    Parr=ones(size(Arr)) 
+    Pchl=Parr*Pmax*(1-exp(-OT*I)) #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
     Pchl=Pchl/2 #12:12 dark:light cycle leading to half photosynthesis
     
     Cnbiosynth = Cnbiosynth/Arr
@@ -527,7 +527,7 @@ def kkI():   #this t00function calculate for the same irradiance
         pyplot.xticks(arange(10,22,step=2),fontsize=20)
         pyplot.yticks(fontsize=20)
         pyplot.xlim(10,20)
-        pyplot.ylim(top=0.2)
+        pyplot.ylim(top=0.15)
         eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
         pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
         bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
@@ -542,7 +542,7 @@ def kkI():   #this t00function calculate for the same irradiance
         pyplot.xticks(arange(10,22,step=2),fontsize=20)
         pyplot.yticks(fontsize=20)
         pyplot.xlim(10,20)
-        pyplot.ylim(top=0.008)
+        pyplot.ylim(top=0.006)
         eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
         pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
         bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
@@ -577,13 +577,13 @@ def kkI():   #this t00function calculate for the same irradiance
     pyplot.legend(loc='lower right',fontsize='x-small',frameon=False)
     
    #### preform R2 for thrane and model 
-    x_values=ThraneNP
-    y_values=NtoPplot
-    correlation_matrix=numpy.corrcoef(x_values,y_values)
-    correlation_xy=correlation_matrix[0,1]
-    r_squared=correlation_xy**2
-    print(r_squared)
-    
+#     x_values=ThraneNP
+#     y_values=NtoPplot
+#     correlation_matrix=numpy.corrcoef(x_values,y_values)
+#     correlation_xy=correlation_matrix[0,1]
+#     r_squared=correlation_xy**2
+#     print(r_squared)
+#     
     return
 
 #AAAAAAAAAAAAAAAAAAAAAAAAAAAAA

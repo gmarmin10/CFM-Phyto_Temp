@@ -1,7 +1,7 @@
 '''
 Created on March 9, 2021
 
-final code for low light
+final code for the P-limiting situation
 
 @author: Keisuke/garmin
 '''
@@ -13,8 +13,7 @@ from matplotlib import *
 import matplotlib.patches as mpat
 import matplotlib.markers as mar
 from numpy import *
-from sigfig import round
-
+from default_line import *
 
 global What_is_limiting
 
@@ -30,10 +29,10 @@ elif What_is_limiting==1:
 #AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 #Function beging here
 #AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-def kkI():   #this t00function calculate for the same irradiance
+def cell(T):   #this t00function calculate for the same irradiance
 
     #I=healey85data.Lightintensity
-    I=20
+    I=1000
 #    plotcolor=healey85data.plotcolor
 
     #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -56,11 +55,6 @@ def kkI():   #this t00function calculate for the same irradiance
 
     C=6
     
-    #Ddmax=1.6
-    #Dmax=4
-    #Dstep=0.001
-    #Dd=arange(Dstep,Ddmax+Dstep,Dstep)       #(h-1) growth rate
-    #U=arange(0,Ddmax/Dstep,1).astype(int)
     Dd=0.25
     D=Dd/(3600*24)
     Mchl=893.49             #(g / mol chlorophyll) mollar mass of chlorophyll
@@ -89,17 +83,23 @@ def kkI():   #this t00function calculate for the same irradiance
     #------------------------------
     Tref=293 
     K = 273                               #Reference temperature (K) from Healey experiment 20 celsius
-    Tmax= 35 + K
-    Tmin= K
-    #Following steps to match 1600 array for the N:P output
-    Tstep=3.8889
-    Ttstep=3.88889
-    Tt=arange(Tmin,Tmax+Ttstep,Ttstep)
-    U = arange(size(Tt))
+#     Tmax= 35 + K
+#     Tmin= K
+#     #Following steps to match 1600 array for the N:P output
+#     Tstep=3.8889
+#     Ttstep=3.88889
+#     
+#     Tt=arange(Tmin,Tmax+2*Ttstep,Ttstep)
+
+    T=T+273
+    
+    U = arange(size(T))
     A=Ea/R
-    Arr=exp(-A*((1/Tt)-(1/Tref))) #arrehenius equation (Geider, 1997) function of temperature 
+    Arr=exp(-A*((1/T)-(1/Tref))) #arrehenius equation (Geider, 1997) function of temperature 
+    
     Parr=ones(size(Arr))
-    Tc = Tt - K
+    
+    
 
     Pchl=Parr*Pmax*(1-exp(-OT*I)) #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
     Pchl=Pchl/2 #12:12 dark:light cycle leading to half photosynthesis
@@ -206,9 +206,9 @@ def kkI():   #this t00function calculate for the same irradiance
     #=================================
     #Vector preparation
     #=================================
-    Nstore=zeros(size(Tt))
-    X=zeros(size(Tt))
-    Qn_test=zeros(size(Tt))
+    Nstore=zeros(size(T))
+    X=zeros(size(T))
+    Qn_test=zeros(size(T))
     Qp_test=copy(X)
     Qp=copy(X)
     Qn=copy(X)
@@ -259,7 +259,7 @@ def kkI():   #this t00function calculate for the same irradiance
     #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
     Nunit=1/Qc#*14*10**6/(12*10**3)          #((ug N / mgC)/(molN cell-1) unit conversion term (164-20)
     Punit=1/Qc#*30.97*10**6/(12*10**3)       #((ug P / mgC)/(molP cell-1) unit conversion term (164-20)
-    Numbertoarray=ones(size(Tt))            #(dimensionless) Number to array converter
+    Numbertoarray=ones(size(T))            #(dimensionless) Number to array converter
     
     #=======================================
     #Calculation of carbon usage (195-16)
@@ -319,8 +319,8 @@ def kkI():   #this t00function calculate for the same irradiance
     #For plotting 1
     #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
     BiomassC=12*X*Qc   #(mg C L-1) Biomass concentration
-    NtoCplot=Qn/Qc*14*10**6/(12*10**3)    #(ug N / mg C) biomass N to C ratio (164-20)
-    PtoCplot=Qp/Qc*30.97*10**6/(12*10**3)    #(ug P / mg C) biomass P to C ratio (164-20)
+    NtoCplot=Qn/Qc#*14*10**6/(12*10**3)    #(ug N / mg C) biomass N to C ratio (164-20)
+    PtoCplot=Qp/Qc#*30.97*10**6/(12*10**3)    #(ug P / mg C) biomass P to C ratio (164-20)
     NtoPplot=Qn/Qp#*14*10**6/(30.97*10**6)        #(ug N /ug P) biomass N to P ratio (164-20)
     ChltoC0=Chl/Qc         #(mol C chl mol C -1) Chlorophyll to carbon ratio
     Mchl=893.49             #(g / mol chlorophyll) mollar mass of chlorophyll
@@ -394,206 +394,26 @@ def kkI():   #this t00function calculate for the same irradiance
         Numb='%.2E' % Decimal(Numb)
         return Numb
     
-    print("m",sci(m/Qc*86400))
-    print("Pmax",sci(Pmax*86400))
-    print("Apho",sci(OT))
-    print("Ynphoto_chl",sci(Ynphoto_chl*CNprotein))
-#    print("Abio",sci(Cnbiosynth/86400/Qc*CNprotein))
-    print("Cother_protein",sci(Nconst_protein/Qc*CNprotein))
-#    print("Arna",sci(Cnrna_variable/CNprotein*YnucacidP_N/86400))
-    print("Ythylakoid_chl_P",sci(Ypthylakoid_chl))
-    print("Pconst_other",sci(Pconst_other/Qc))
-    print("Nstore_max",sci(Nstore_max/Qc))
-    print("Cessential",sci(Cessential/Qc))
-    
-    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    #5.Plot
-    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    rcParams.update({'font.size': 25,
-                     'lines.markersize':12,
-                     'lines.markeredgewidth':1})
-    rcParams.update({'xtick.major.pad': 15})
-    rcParams.update({'xtick.major.pad': 15})
-    rcParams.update({'font.serif': 'Times New Roman'})
-    rcParams.update({'figure.autolayout': True})
-    rcParams['figure.figsize']=8,6.5
-    rcParams.update({'figure.facecolor':'w'})
-    rcParams.update({'lines.linewidth':3})   
-    rcParams.update({'patch.edgecolor':'none'})
-    
-    rcParams.update({'axes.linewidth':1.5})
-    rcParams.update({'xtick.major.width':1})
-    rcParams.update({'ytick.major.width':1})
-    rcParams.update({'mathtext.default': 'regular' })
-    
-    #lowlim=Tmin
-    #highlim=Tmax+1
-    #step=1.0
-     
-    #==================================
-    #Plot control * 1=on other=off
-    #==================================
-    Plot_C=1
-    Plot_NC=1
-    Plot_PC=1
-    Plot_Chl=1
-    Plot_NC_stack=1
-    Plot_PC_stack=1
-    Plot_C_stack=1
-    Plot_C_stack_small=1
-    #============================================
-    #What is limiting: output folder controll
-    #============================================
-    if What_is_limiting==0:
-        Whatislimiting="P-limiting"
-    elif What_is_limiting==1:
-        Whatislimiting="N-limiting"
-    #============================================
-     
-    #print(BiomassC)
-
-         
-    #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-    #Stack plot part
-    #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-    Color_DNA_const='orange'
-    Color_RNA_const='yellow'
-    Color_protein_const='blue'
-    Color_photo='yellow'
-    Color_RNA_variable='red'
-    Color_DNA_variable='blue'
-    Color_protein_biosynthesis='pink'
-    Color_chl='#66FF66'
-    #Color_chl='#207446'
-    Color_other='#006400'
-    #Color_other='cyan'
-    Color_other='#008000'
-     
-    Color_P_const='#CCFFFF'
-    Color_DNA='black'
-    Color_RNA='red'
-    Color_Nstore='purple'
-    Color_Pstore='#D0CECE'
-    Color_Pstore='#DDEBF7'  #change
-    Color_Cessential='brown'
-    Color_thylakoid='#FFD966'
-    
-    
-    #needs to be changed colors for more color blind friendly figures
-    Color_Photo='#CC6677'   #rose
-    Color_Bio='#44AA99'     #teal
-    Color_Other='#4B0082'   #indigo 
-    Color_Nstore='#FFCCCC'
-    Color_other='#DDCC77'   #sand
-    
-     
-    StackPlotColorsN=(Color_Nstore,Color_protein_const,Color_photo,Color_protein_biosynthesis,Color_DNA,Color_RNA,Color_chl)
-    StackPlotColorsP=(Color_P_const,Color_thylakoid,Color_DNA,Color_RNA,Color_Pstore)
-    
-    StackPlotColorsN=(Color_Other,Color_Photo,Color_Bio,Color_Nstore,Color_other)
-    StackPlotColorsP=(Color_Other,Color_Photo,Color_Bio,Color_Pstore)
-    StackPlotColorsC=(Color_Other,Color_Photo,Color_Bio,Color_Nstore,Color_other)
-    StackPlotColorsCsmalls=(Color_DNA,Color_RNA,Color_chl,Color_thylakoid) 
-     
-    FigurenumberN_C=10
-#    if healey85data.i>-1:
- 
-    FigurenumberC=20
-    if Plot_C_stack==1:
-        pyplot.figure(1,figsize=(7.7,6.5))
-        pyplot.stackplot(Tc,Cessential_plot+Cconst_protein_plot+Cdna_const_plot+Cdna_variable_plot,\
-                  Cphoto_plot+CthylakoidPG_plot+Cchl_plot,Crna_const_plot+Crna_variable_plot+Cbiosynth_plot,Cnstore_plot,Cother_plot,colors=StackPlotColorsC,alpha=0.75)
-        print(Cbiosynth_plot) 
-        #plot(healey85data.D_PtoC, healey85data.PtoC,'o' ,color="black")
-        pyplot.xlabel('Temperature (\u2103)', fontsize=25)                       #copied from 73
-        pyplot.ylabel('Carbon allocation ($\%$)', fontsize=25)  #copied from 73
-        pyplot.xticks(arange(10,22,step=2),fontsize=20)
-        pyplot.xlim(10,20)
-        pyplot.ylim(ymax=percentorratio+1e-20)
-        pyplot.yticks(fontsize=20)
-        pyplot.title('Light: '+str(I)+' $\mu$mol m$^{-2}$ s$^{-1}$',y=1.02,fontsize=20)
-        eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
-        pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
-        bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
-        sleg=mpat.Patch(color='#DDCC77',label='Carbon Storage',alpha=0.75)
-        pyplot.legend(handles=[eleg,pleg,bleg,sleg],loc='upper center',bbox_to_anchor=(0.5,-0.25), ncol=2,fontsize='x-small',frameon=False)
-
-
-        pyplot.figure(2,figsize=(7.7,6.5))
-        pyplot.stackplot(Tc,Nconst_protein_plot+Ndna_const_plot+Ndna_variable_plot,Nphoto_plot+Nchl_plot,Nbiosynth_plot+Nrna_variable_plot+Nrna_const_plot,Nstore_plot,colors=StackPlotColorsN,alpha=0.75)
-#        stackplot(Dd,Nconst_other_plot,Nconst_protein_plot,Nproteinsynth_plot,Nphoto_plot,Ndna_plot,Nrna_plot,Nchl_plot,colors=StackPlotColorsN)
-        pyplot.xlabel('Temperature (\u2103)', fontsize=25)                       #copied from 73
-        pyplot.ylabel('N:C (mol/mol)', fontsize=25)  #copied from 73
-
-        pyplot.xticks(arange(10,22,step=2),fontsize=20)
-        ytix=arange(0.00,0.30,step=0.05)
-        pyplot.yticks(ytix,fontsize=20)
-        pyplot.xlim(10,20)
-        pyplot.ylim(top=0.25)
-        eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
-        pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
-        bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
-        pyplot.legend(handles=[eleg,pleg,bleg],loc='upper right',fontsize='x-small',frameon=False)
-
-        
-        pyplot.figure(3,figsize=(7.7,6.5))
-        pyplot.stackplot(Tc,Pconst_other_plot+Pdna_const_plot+Pdna_variable_plot,Pthylakoid_plot,Prna_variable_plot+Prna_const_plot,Pstore_plot,colors=StackPlotColorsP,edgecolor='none',alpha=0.75)
-        pyplot.xlabel('Temperature (\u2103)',fontsize=25)                       #copied from 73
-        pyplot.ylabel('P:C (mol/mol)',fontsize=25)  #copied from 73  C$^{-1}$
-
-        pyplot.xticks(arange(10,22,step=2),fontsize=20)
-        pyplot.yticks(fontsize=20)
-        pyplot.xlim(10,20)
-        pyplot.ylim(top=0.010)
-        eleg=mpat.Patch(color='#4B0082', label="Other",alpha=0.75)
-        pleg=mpat.Patch(color='#CC6677', label="Photosynthesis",alpha=0.75)
-        bleg=mpat.Patch(color='#44AA99',label='Biosynthesis',alpha=0.75)
-        #pyplot.legend(handles=[eleg,pleg,bleg],loc='upper right',fontsize='xx-small',frameon=False)
-
-
-  ######Entering the Thrane Data
-    thrane=genfromtxt('thrane_d.csv',delimiter=',') 
-      
-    Thranet=thrane[1:,0]
-    ThraneNP=thrane[1:,1]
-    thrlow=thrane[1:,2]
-    thrhigh=thrane[1:,3]
-    
-    error=[-(ThraneNP-thrlow),(ThraneNP-thrhigh)]
- #####plotting   
-    pyplot.figure(4)
-    pyplot.plot(Tc,NtoPplot, color='#44AA99', linewidth=2,zorder=-1)
-    
-    #pyplot.scatter(Thranet,ThraneNP, s=40,color='#882255')
-    pyplot.xlim(10,20)
-    pyplot.ylim(bottom=0,top=50)
-    pyplot.xlabel('Temperature (\u2103)', fontsize=25)
-    pyplot.xticks(fontsize=20)
-    pyplot.ylabel('N:P (mol/mol)', fontsize=25)
-    pyplot.yticks(fontsize=20)
-    #pyplot.errorbar(Thranet,ThraneNP,yerr=error,xerr=None,fmt='none',color='#882255',elinewidth=1,capsize=2)
-    h = genfromtxt('C:/Users/19046/Documents/Fall 2020/C-AIM/.metadata/Cell_Flux_Practice/Model_output.csv',delimiter=',')
-    pyplot.plot(Tc,h,'--',color='#882255',markersize=8)
-    modelleg=pyplot.plot(Tc,NtoPplot,'-',color='#44AA99', label="Model",zorder=-1)
-    dataleg=pyplot.plot(Tc,h,'--',color='#882255',markersize=8,label='Default Model Output')
-    pyplot.legend(loc='lower right',fontsize='x-small',frameon=False)
-    
-   #### preform R2 for thrane and model 
-#     x_values=ThraneNP
-#     y_values=NtoPplot
-#     correlation_matrix=numpy.corrcoef(x_values,y_values)
-#     correlation_xy=correlation_matrix[0,1]
-#     r_squared=correlation_xy**2
-#     print(r_squared)
+#     print("m",sci(m/Qc*86400))
+#     print("Pmax",sci(Pmax*86400))
+#     print("Apho",sci(OT))
+#     print("Ynphoto_chl",sci(Ynphoto_chl*CNprotein))
+# #    print("Abio",sci(Cnbiosynth/86400/Qc*CNprotein))
+#     print("Cother_protein",sci(Nconst_protein/Qc*CNprotein))
+# #    print("Arna",sci(Cnrna_variable/CNprotein*YnucacidP_N/86400))
+#     print("Ythylakoid_chl_P",sci(Ypthylakoid_chl))
+#     print("Pconst_other",sci(Pconst_other/Qc))
+#     print("Nstore_max",sci(Nstore_max/Qc))
+#     print("Cessential",sci(Cessential/Qc))
 #     
-    return
+ 
+    return NtoPplot,PtoCplot,NtoCplot
 
 #AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-    
-healey85data=healey85C()
-kkI()
 
-pyplot.show()
+x=cell(19)
+ 
+print(x)
 
 
 

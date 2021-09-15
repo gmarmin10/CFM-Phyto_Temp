@@ -88,19 +88,21 @@ def kkI():
     Tt=arange(Tmin,Tmax+Ttstep,Ttstep)
     U = arange(size(Tt))
     
+#     A=Ea/R
+#     Arr=exp(-A*((1/Tt)-(1/Tref)))    #arrehenius equation (Geider, 1997) function of temperature 
+    #Parr=ones(size(Arr))            #no temperature dependence on photosynthesis
     
-    A=Ea/R
-    Arr=exp(-A*((1/Tt)-(1/Tref)))    #arrehenius equation (Geider, 1997) function of temperature 
-    
-    Parr=ones(size(Arr))            #no temperature dependence on photosynthesis
-    
+    Q10=2.8
+    RateQ10=Q10**((Tt-Tref)/10)
+    Parr=ones(size(RateQ10))
+   
     Tc = Tt - K
 
     Pchl=Parr*Pmax*(1-exp(-OT*I))     #(C mol s-1 Chl mol-1) Carbohydrate fixation rate per chlorophyll (167-1)(193-25)
     Pchl=Pchl/2                      #12:12 dark:light cycle leading to half photosynthesis
     
-    Cnbiosynth = Cnbiosynth/Arr
-    Cnrna_variable = Cnrna_variable/Arr
+    Cnbiosynth = Cnbiosynth/RateQ10
+    Cnrna_variable = Cnrna_variable/RateQ10
     
     ls=D*Qc                          #(molC s-1) Biomass synthesis rate (193-25)
     #------------------------------
@@ -543,12 +545,17 @@ def kkI():
     pyplot.yticks(fontsize=20)
     pyplot.errorbar(Thranet,ThraneNP,yerr=error,xerr=None,fmt='none',color='#882255',elinewidth=1,capsize=2)
     
-    modelleg=pyplot.plot(Tc,NtoPplot,'-',color='#44AA99', label="Model",zorder=-1)
+    #modelleg=pyplot.plot(Tc,NtoPplot,'-',color='#44AA99', label="Model",zorder=-1)
     dataleg=pyplot.plot(Thranet,ThraneNP,'o',color='#882255',markersize=8,label='Thrane et al. 2017')
+    h = genfromtxt('C:/Users/19046/Documents/Fall 2020/C-AIM/.metadata/Cell_Flux_Practice/Model_output.csv',delimiter=',')
+    pyplot.plot(Tc,h,'--',color='#882255',markersize=8)
+    modelleg=pyplot.plot(Tc,NtoPplot,'-',color='#44AA99', label="Q10 Model output",zorder=-1)
+    dataleg=pyplot.plot(Tc,h,'--',color='#882255',markersize=8,label='Arrhenius Model Output')
     pyplot.legend(loc='lower right',fontsize='x-small',frameon=False)
+   # pyplot.legend(loc='lower right',fontsize='x-small',frameon=False)
     
-    st(NtoPplot[:],"","Model_output")
-    savetxt('C:/Users/19046/Documents/Fall 2020/C-AIM/.metadata/Cell_Flux_Practice/Model_output.csv',NtoPplot,delimiter=",",fmt="%s")
+  #  st(NtoPplot[:],"","Model_output")
+  #  savetxt('C:/Users/19046/Documents/Fall 2020/C-AIM/.metadata/Cell_Flux_Practice/Model_output.csv',NtoPplot,delimiter=",",fmt="%s")
     
        
     return
